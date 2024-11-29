@@ -2,14 +2,14 @@ import pandas as pd
 import streamlit as st
 import io
 
-def obtener_datos_api(url):
-    """Función que realiza la petición a la API y devuelve un DataFrame."""
-    return pd.read_excel(url)
-
-# Llamar la función para obtener los datos
-api_url = "https://github.com/cathalinaa/solemne/raw/main/datos_paises_procesados.xlsx"  # Asegúrate de usar la URL correcta para el archivo crudo
-df = obtener_datos_api(api_url)
-
+def obtener_datos_paises():
+    url = 'https://github.com/cathalinaa/solemne/raw/main/datos_paises_procesados.xlsx' 
+    respuesta = requests.get(url)
+    if respuesta.status_code == 200:
+        return respuesta.json()
+    else:
+        st.error(f'Error: {respuesta.status_code}')
+        return []
 if df is not None:
     st.write(df.head())
 

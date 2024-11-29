@@ -80,4 +80,5 @@ if df is not None:
         @st.cache_data
         def convertir_a_excel(df):
             buffer = io.BytesIO()
-            with pd.ExcelWriter(buffer, engine='xlsx
+            with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+                df.to_excel(writer, index=False

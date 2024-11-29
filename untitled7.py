@@ -91,11 +91,11 @@ if data is not None:
                 dataframe.to_excel(writer, index=False, sheet_name='Datos')
             output.seek(0)
             return output.getvalue()
-
-              if st.button("Descargar"):
-                  if formato == 'CSV':
-                      csv = convertir_a_csv(df_filtrado)
-                      st.download_button("Descargar CSV", csv, "datos_filtrados.csv", "text/csv")
-                  elif formato == 'Excel':
-                      excel = convertir_a_excel(df_filtrado)
-                      st.download_button("Descargar Excel", excel, "datos_filtrados.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            
+            if st.button("Descargar"):
+                if formato == 'CSV':
+                    csv = convertir_a_csv(df_filtrado)
+                    st.download_button("Descargar CSV", csv, "datos_filtrados.csv", "text/csv")
+                elif formato == 'Excel':
+                    excel = convertir_a_excel(df_filtrado)
+                    st.download_button("Descargar Excel", excel, "datos_filtrados.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")

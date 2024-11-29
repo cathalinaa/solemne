@@ -13,9 +13,9 @@ import pandas as pd
 import requests
 import streamlit as st
 
-  def obtener_datos_api(api_https://restcountries.com/v3.1/all ):
+  def obtener_datos_api(https://github.com/cathalinaa/solemne/blob/main/datos_paises_procesados.xlsx):
     """Función que realiza la petición a la API y devuelve un DataFrame."""
-    response = requests.get(api_https://restcountries.com/v3.1/all )
+    response = requests.get(https://github.com/cathalinaa/solemne/blob/main/datos_paises_procesados.xlsx )
    if response.status_code == 200:
         data = response.json()
         return pd.DataFrame(data)

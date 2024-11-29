@@ -1,17 +1,13 @@
-# -*- coding: utf-8 -*-
-"""Aplicación de Streamlit para interactuar con datos de países"""
-
 import pandas as pd
 import requests
 import streamlit as st
 import io
 
 def obtener_datos_paises():
-    url = 'https://github.com/jxnscv/Programacion/blob/main/all.json' 
+    url = 'https://github.com/jxnscv/Programacion/blob/main/all.json'  # URL correcta para obtener los datos
     respuesta = requests.get(url)
     if respuesta.status_code == 200:
-        # Guardar el contenido del archivo Excel en un objeto BytesIO
-        return pd.read_excel(io.BytesIO(respuesta.content))
+        return respuesta.json()  # Retornar el contenido JSON
     else:
         st.error(f'Error: {respuesta.status_code}')
         return None
@@ -21,7 +17,8 @@ df = obtener_datos_paises()
 
 # Si hay datos, mostrar el DataFrame
 if df is not None:
-    st.write(df.head())
+    # Convertir la respuesta JSON a un DataFrame
+    df = pd.json_normalize(df)
 
     # Selección de columnas relevantes
     df['Nombre'] = df['name'].apply(lambda x: x.get('common') if isinstance(x, dict) else None)
@@ -80,10 +77,10 @@ if df is not None:
         # Botón para descargar los datos filtrados
         st.subheader("Exportar Datos Filtrados")
         formato = st.radio("Elige el formato para descargar:", ('CSV', 'Excel'))
-
+        
         @st.cache_data
-        def convertir_a_csv(df):
-            return df.to_csv(index=False).encode('utf-8')
+        def convertir_a_excel(df):
+            buffer = io.BytesIO()
             with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
                 df.to_excel(writer, index=False, sheet_name='Datos')
             buffer.seek(0)

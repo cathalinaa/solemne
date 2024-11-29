@@ -13,7 +13,7 @@ import pandas as pd
 import requests
 import streamlit as st
 
-  def obtener_datos_api(https://github.com/cathalinaa/solemne/blob/main/datos_paises_procesados.xlsx):
+  def obtener_datos_api(url):
     """Función que realiza la petición a la API y devuelve un DataFrame."""
     response = requests.get(https://github.com/cathalinaa/solemne/blob/main/datos_paises_procesados.xlsx )
    if response.status_code == 200:

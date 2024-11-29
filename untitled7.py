@@ -4,7 +4,7 @@ import streamlit as st
 import io
 
 def obtener_datos_paises():
-    url = 'https://github.com/jxnscv/Programacion/blob/main/all.json'  # URL correcta para obtener los datos
+    url = 'https://raw.githubusercontent.com/jxnscv/Programacion/main/all.json'  # URL correcta para obtener los datos
     respuesta = requests.get(url)
     if respuesta.status_code == 200:
         return respuesta.json()  # Retornar el contenido JSON

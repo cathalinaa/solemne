@@ -3,6 +3,7 @@
 
 import pandas as pd
 import streamlit as st
+import io
 
 def obtener_datos_api(url):
     """Función que realiza la petición a la API y devuelve un DataFrame."""
@@ -76,8 +77,7 @@ if df is not None:
         def convertir_a_csv(df):
             return df.to_csv(index=False).encode('utf-8')
 
-        
         @st.cache_data
         def convertir_a_excel(df):
             buffer = io.BytesIO()
-            with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+            with pd.ExcelWriter(buffer, engine='xlsx

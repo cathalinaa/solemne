@@ -7,7 +7,7 @@ import streamlit as st
 import io
 
 def obtener_datos_paises():
-    url = 'https://github.com/cathalinaa/solemne/raw/main/datos_paises_procesados.xlsx' 
+    url = 'https://github.com/jxnscv/Programacion/blob/main/all.json' 
     respuesta = requests.get(url)
     if respuesta.status_code == 200:
         # Guardar el contenido del archivo Excel en un objeto BytesIO

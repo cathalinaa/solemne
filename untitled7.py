@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 import streamlit as st
+import io
 
 def obtener_datos_paises():
     url = 'https://raw.githubusercontent.com/jxnscv/Programacion/main/all.json' 
@@ -27,34 +28,21 @@ def convertir_a_dataframe(paises):
         })
     return pd.DataFrame(datos)
 
-df = obtener_datos_paises()
+# Llamar la función para obtener los datos
+data = obtener_datos_paises()
 
-# Si hay datos, mostrar el DataFrame
-if df is not None:
-    # Convertir la respuesta JSON a un DataFrame
-    df = pd.json_normalize(df)
+# Si hay datos, convertir a DataFrame y mostrar
+if data is not None:
+    df = convertir_a_dataframe(data)
 
-    # Selección de columnas relevantes
-    df['Nombre'] = df['name'].apply(lambda x: x.get('common') if isinstance(x, dict) else None)
-    df['Región'] = df['region']
-    df['Población'] = df['population']
-    df['Área (km²)'] = df['area']
-    df['Fronteras'] = df['borders'].apply(lambda x: len(x) if isinstance(x, list) else 0)
-    df['Idiomas Oficiales'] = df['languages'].apply(lambda x: len(x) if isinstance(x, dict) else 0)
-    df['Zonas Horarias'] = df['timezones'].apply(lambda x: len(x) if isinstance(x, list) else 0)
-
-    # Filtrar columnas seleccionadas
-    columnas = ['Nombre', 'Región', 'Población', 'Área (km²)', 'Fronteras', 'Idiomas Oficiales', 'Zonas Horarias']
-    df_cleaned = df[columnas]
-
-    # Mostrar DataFrame con las columnas seleccionadas
+    # Mostrar el DataFrame
     st.title("Interacción con los datos:")
     st.write("Mostrar datos originales:")
-    st.dataframe(df_cleaned)
+    st.dataframe(df)
 
     st.header("Selecciona una columna del dataframe utilizando un menú desplegable")
-    columnas_seleccionadas = st.multiselect('Selecciona las columnas a visualizar', df_cleaned.columns.tolist(), default=df_cleaned.columns.tolist())
-    df_seleccionado = df_cleaned[columnas_seleccionadas]
+    columnas_seleccionadas = st.multiselect('Selecciona las columnas a visualizar', df.columns.tolist(), default=df.columns.tolist())
+    df_seleccionado = df[columnas_seleccionadas]
 
     # Mostrar el DataFrame con las columnas seleccionadas
     st.write('Columnas Seleccionadas:')
@@ -76,44 +64,38 @@ if df is not None:
     st.write('DataFrame Ordenado:')
     st.write(df_ordenado)
 
-    columna_filtro = st.selectbox("Selecciona una columna para filtrar:", df_cleaned.select_dtypes(include=['number']).columns)
+    columna_filtro = st.selectbox("Selecciona una columna para filtrar:", df.select_dtypes(include=['number']).columns)
     if columna_filtro:
         min_val, max_val = st.slider(
             f"Selecciona el rango para {columna_filtro}:",
-            float(df_cleaned[columna_filtro].min()),
-            float(df_cleaned[columna_filtro].max()),
-            (float(df_cleaned[columna_filtro].min()), float(df_cleaned[columna_filtro].max()))
+            float(df[columna_filtro].min()),
+            float(df[columna_filtro].max()),
+            (float(df[columna_filtro].min()), float(df[columna_filtro].max()))
         )
-        df_filtrado = df_cleaned[(df_cleaned[columna_filtro] >= min_val) & (df_cleaned[columna_filtro] <= max_val)]
+        df_filtrado = df[(df[columna_filtro] >= min_val) & (df[columna_filtro] <= max_val)]
         st.write("**Datos Filtrados:**")
         st.write(df_filtrado)
 
         # Botón para descargar los datos filtrados
         st.subheader("Exportar Datos Filtrados")
         formato = st.radio("Elige el formato para descargar:", ('CSV', 'Excel'))
-        
-        @st.cache_data
-        def convertir_a_excel(df):
-            buffer = io.BytesIO()
-            with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-                df.to_excel(writer, index=False, sheet_name='Datos')
-            buffer.seek(0)
-            return buffer.getvalue()
 
-        if st.button("Descargar"):
+        @st.cache_data
+        def convertir_a_csv(dataframe):
+            return dataframe.to_csv(index=False)
+
+        @st.cache_data
+        def convertir_a_excel(dataframe):
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                dataframe.to_excel(writer, index=False, sheet_name='Datos')
+            output.seek(0)
+            return output.getvalue()
+
+              if st.button("Descargar"):
             if formato == 'CSV':
                 csv = convertir_a_csv(df_filtrado)
-                st.download_button(
-                    label="Descargar CSV",
-                    data=csv,
-                    file_name='datos_filtrados.csv',
-                    mime='text/csv'
-                )
+                st.download_button("Descargar CSV", csv, "datos_filtrados.csv", "text/csv")
             elif formato == 'Excel':
                 excel = convertir_a_excel(df_filtrado)
-                st.download_button(
-                    label="Descargar Excel",
-                    data=excel,
-                    file_name='datos_filtrados.xlsx',
-                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                )
+                st.download_button("Descargar Excel", excel, "datos_filtrados.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")

@@ -1,10 +1,9 @@
 import pandas as pd
 import requests
 import streamlit as st
-import io
 
 def obtener_datos_paises():
-    url = 'https://raw.githubusercontent.com/jxnscv/Programacion/main/all.json'  # URL correcta para obtener los datos
+    url = 'https://raw.githubusercontent.com/jxnscv/Programacion/main/all.json' 
     respuesta = requests.get(url)
     if respuesta.status_code == 200:
         return respuesta.json()  # Retornar el contenido JSON
@@ -12,7 +11,22 @@ def obtener_datos_paises():
         st.error(f'Error: {respuesta.status_code}')
         return None
 
-# Llamar la función para obtener los datos
+def convertir_a_dataframe(paises):
+    datos = []
+    for pais in paises:
+        datos.append({
+            'Nombre Común': pais.get('name', {}).get('common', 'No disponible'),
+            'Región Geográfica': pais.get('region', 'No disponible'),
+            'Población Total': pais.get('population', 0),
+            'Área en km²': pais.get('area', 0),
+            'Número de Fronteras': len(pais.get('borders', [])),
+            'Número de Idiomas Oficiales': len(pais.get('languages', {})),
+            'Número de Zonas Horarias': len(pais.get('timezones', [])),
+            'Latitud': pais.get('latlng', [None, None])[0],
+            'Longitud': pais.get('latlng', [None, None])[1]
+        })
+    return pd.DataFrame(datos)
+
 df = obtener_datos_paises()
 
 # Si hay datos, mostrar el DataFrame

@@ -10,8 +10,8 @@ Original file is located at
 
 
 import pandas as pd
-  import requests
-  import streamlit as st
+import requests
+import streamlit as st
 
   def obtener_datos_api(api_url):
     """Función que realiza la petición a la API y devuelve un DataFrame."""
